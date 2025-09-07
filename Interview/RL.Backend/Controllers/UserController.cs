@@ -32,28 +32,4 @@ public class UsersController : ControllerBase
     {
         return _context.Users;
     }
-
-    [HttpPost("AddUserToPlanProcedure")]
-    public async Task<ActionResult<PlanProcedureUserDto>> AddUserToPlanProcedure(AddUserToPlanProcedureCommand command, CancellationToken token)
-    {
-        var response = await _mediator.Send(command, token);
-
-        return Ok(response);
-    }
-
-    [HttpDelete("RemoveUserFromPlanProcedure")]
-    public async Task<ActionResult<PlanProcedureUserDto>> RemoveUserFromPlanProcedureAddUserToPlanProcedure(DeleteUserToPlanProcedureCommand command, CancellationToken token)
-    {
-        var response = await _mediator.Send(command, token);
-
-        return Ok(response);
-    }
-
-    [HttpDelete("RemoveAllUsersFromPlanProcedure")]
-    public async Task<ActionResult<PlanProcedureUserDto>> RemoveAllUsersFromPlanProcedureAddUserToPlanProcedure(DeleteAllUsersToPlanProcedureCommand command, CancellationToken token)
-    {
-        var response = await _mediator.Send(command, token);
-
-        return Ok(response);
-    }
 }

@@ -5,10 +5,11 @@ using RL.Backend.Models;
 using RL.Data;
 using RL.Data.DataModels;
 using RL.Data.DTOs;
+using System.Numerics;
 
 namespace RL.Backend.Commands.Handlers.Users
 {
-    public class AddUserToPlanProcedureCommandHandler: IRequestHandler<AddUserToPlanProcedureCommand, PlanProcedureUserDto>
+    public class AddUserToPlanProcedureCommandHandler: IRequestHandler<AddUserToPlanProcedureCommand, ApiResponse<PlanProcedureUserDto>>
     {
         private readonly RLContext _context;
         public AddUserToPlanProcedureCommandHandler(RLContext context) 
@@ -16,31 +17,41 @@ namespace RL.Backend.Commands.Handlers.Users
             _context = context;
         }
 
-        public async Task<PlanProcedureUserDto> Handle(AddUserToPlanProcedureCommand request, CancellationToken cancellationToken)
+        public async Task<ApiResponse<PlanProcedureUserDto>>  Handle(AddUserToPlanProcedureCommand request, CancellationToken cancellationToken)
         {
-            var planProcedure = await _context.PlanProcedures.Include(x => x.PlanProcedureUsers).FirstOrDefaultAsync(pp => pp.ProcedureId == request.ProcedureId && pp.PlanId == request.PlanId, cancellationToken);
-
-            if (planProcedure is null)
-                throw new Exception($"ProcedureId: {request.ProcedureId} or PlanId: {request.PlanId} not found");
-
-            var newUser = new PlanProcedureUser
+            try
             {
-                UserId = request.UserId
-            };
+                var planProcedure = await _context.PlanProcedures.Include(x => x.PlanProcedureUsers).FirstOrDefaultAsync(pp => pp.ProcedureId == request.ProcedureId && pp.PlanId == request.PlanId, cancellationToken);
 
-            planProcedure.PlanProcedureUsers.Add(newUser);
+                if (planProcedure is null)
+                    return ApiResponse<PlanProcedureUserDto>.Fail(new NotFoundException($"ProcedureId: {request.ProcedureId} or PlanId: {request.PlanId} not found"));
 
-            await _context.SaveChangesAsync(cancellationToken);
+                //Already has the procedure, so just succeed
+                if (planProcedure.PlanProcedureUsers.Any(ppu => ppu.ProcedureId == request.ProcedureId && ppu.PlanId == request.PlanId && ppu.UserId == request.UserId))
+                    return ApiResponse<PlanProcedureUserDto>.Succeed(new PlanProcedureUserDto());
 
-            var dto = new PlanProcedureUserDto
+                var newUser = new PlanProcedureUser
+                {
+                    UserId = request.UserId
+                };
+
+                planProcedure.PlanProcedureUsers.Add(newUser);
+
+                await _context.SaveChangesAsync(cancellationToken);
+
+                var dto = new PlanProcedureUserDto
+                {
+                    PlanId = newUser.PlanId,
+                    ProcedureId = newUser.ProcedureId,
+                    UserId = newUser.UserId
+                };
+
+                return ApiResponse<PlanProcedureUserDto>.Succeed(dto);
+            }
+            catch (Exception e)
             {
-                PlanId = newUser.PlanId,
-                ProcedureId = newUser.ProcedureId,
-                UserId = newUser.UserId
-            };
-
-            return dto;
-            
+                return ApiResponse<PlanProcedureUserDto>.Fail(e);
+            }
         }
     }
 }

@@ -4,7 +4,7 @@ using RL.Data.DTOs;
 
 namespace RL.Backend.Commands
 {
-    public class DeleteUserToPlanProcedureCommand : IRequest<Unit>
+    public class DeleteUserToPlanProcedureCommand : IRequest<ApiResponse<Unit>>
     {
         public int PlanId { get; set; }
         public int ProcedureId { get; set; }

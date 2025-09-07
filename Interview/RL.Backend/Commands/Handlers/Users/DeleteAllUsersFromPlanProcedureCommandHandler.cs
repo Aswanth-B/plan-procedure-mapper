@@ -8,7 +8,7 @@ using RL.Data.DTOs;
 
 namespace RL.Backend.Commands.Handlers.Users
 {
-    public class DeleteAllUsersFromPlanProcedureCommandHandler : IRequestHandler<DeleteAllUsersToPlanProcedureCommand>
+    public class DeleteAllUsersFromPlanProcedureCommandHandler : IRequestHandler<DeleteAllUsersToPlanProcedureCommand, ApiResponse<Unit>> 
     {
         private readonly RLContext _context;
         public DeleteAllUsersFromPlanProcedureCommandHandler(RLContext context)
@@ -16,19 +16,26 @@ namespace RL.Backend.Commands.Handlers.Users
             _context = context;
         }
 
-        public async Task<Unit> Handle(DeleteAllUsersToPlanProcedureCommand request, CancellationToken cancellationToken)
+        public async Task<ApiResponse<Unit>> Handle(DeleteAllUsersToPlanProcedureCommand request, CancellationToken cancellationToken)
         {
-            var planProcedureUsers = await _context.PlanProcedureUsers.Where(p => p.ProcedureId == request.ProcedureId && p.PlanId == request.PlanId).ToListAsync();
+            try
+            {
+                var planProcedureUsers = await _context.PlanProcedureUsers.Where(p => p.ProcedureId == request.ProcedureId && p.PlanId == request.PlanId).ToListAsync();
 
-            if (planProcedureUsers is null)
-                throw new Exception($"ProcedureId: {request.ProcedureId} or PlanId: {request.PlanId} not found");
+                if (planProcedureUsers is null)
+                    throw new Exception($"ProcedureId: {request.ProcedureId} or PlanId: {request.PlanId} not found");
 
 
-            _context.PlanProcedureUsers.RemoveRange(planProcedureUsers);
+                _context.PlanProcedureUsers.RemoveRange(planProcedureUsers);
 
-            await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
 
-            return Unit.Value;
+                return ApiResponse<Unit>.Succeed(new Unit());
+            }
+
+            catch (Exception ex) {
+                return ApiResponse<Unit>.Fail(ex);
+            }
 
         }
     }

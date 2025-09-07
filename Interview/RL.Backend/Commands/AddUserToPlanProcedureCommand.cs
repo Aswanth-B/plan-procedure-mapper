@@ -4,7 +4,7 @@ using RL.Data.DTOs;
 
 namespace RL.Backend.Commands
 {
-    public class AddUserToPlanProcedureCommand : IRequest<PlanProcedureUserDto>
+    public class AddUserToPlanProcedureCommand : IRequest<ApiResponse<PlanProcedureUserDto>>
     {
         public int PlanId { get; set; }
         public int ProcedureId { get; set; }
