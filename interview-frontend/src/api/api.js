@@ -67,7 +67,7 @@ export const getUsers = async () => {
 };
 
 export const addUserToPlanProcedure = async (planId, procedureId, userId) => {
-    const url = `${api_url}/PlanProcedureUser`;
+    const url = `${api_url}/PlanProcedure/User`;
     var command = { planId: planId, procedureId: procedureId, userId: userId };
     const response = await fetch(url, {
         method: "POST",
@@ -84,7 +84,7 @@ export const addUserToPlanProcedure = async (planId, procedureId, userId) => {
 };
 
 export const removeUserFromPlanProcedure = async (planId, procedureId, userId) => {
-    const url = `${api_url}/PlanProcedureUser/RemoveUserFromPlanProcedure`;
+    const url = `${api_url}/PlanProcedure/RemoveUserFromPlanProcedure`;
     var command = { planId: planId, procedureId: procedureId, userId: userId };
     const response = await fetch(url, {
         method: "DELETE",
@@ -101,7 +101,7 @@ export const removeUserFromPlanProcedure = async (planId, procedureId, userId) =
 };
 
 export const removeAllUsersFromPlanProcedure = async (planId, procedureId) => {
-    const url = `${api_url}/PlanProcedureUser/RemoveAllUsersFromPlanProcedure`;
+    const url = `${api_url}/PlanProcedure/RemoveAllUsersFromPlanProcedure`;
     var command = { planId: planId, procedureId: procedureId };
     const response = await fetch(url, {
         method: "DELETE",

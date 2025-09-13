@@ -13,7 +13,16 @@ const PlanProcedureItem = ({ procedure, users, planProcedureUsers }) => {
     }, [planProcedureUsers, users]);
 
     const handleAssignUserToProcedure = async (e, actionMeta) => {
-        // TODO: Remove console.log and add missing logic
+        if(!id || isNaN(Number(id))){
+            //Can use toaster or error element to show error message
+            console.log("Invalid Plan Id");
+            return;
+        }
+        if(!procedure.procedureId || isNaN(Number(procedure.procedureId))){
+            //Can use toaster or error element to show error message
+            console.log("Invalid Procedure Id");
+            return;
+        }
         switch(actionMeta.action){
             case "select-option":
                 console.log(actionMeta.option.value);
